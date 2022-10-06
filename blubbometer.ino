@@ -3,8 +3,8 @@ LiquidCrystal lcd(12,11,5,4,3,2);
 
 const int sensorPin = A0;
 int counter = 0;
-int t0 = 0;
-int t1 = 1;
+long t0 = 0;
+long t1 = 1;
 const int snittSize = 100;
 int snittArray[snittSize];
 float snitt;
