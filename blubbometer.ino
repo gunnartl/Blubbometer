@@ -1,16 +1,27 @@
 #include <LiquidCrystal.h>
 LiquidCrystal lcd(12,11,5,4,3,2);
 
-const int sensorPin = A0;
-int counter = 0;
+const int pressurePin = A0;
+const int tempPin = A1;
+long counter = 0;
 long t0 = 0;
 long t1 = 1;
 const int snittSize = 100;
 int snittArray[snittSize];
 float snitt;
+
+int pressure;
+int tempPinVal;
+float tempVoltage;
+float temp;
+float tempMax = -100;
+float tempMin = 100;
+float avgTemp;
+int tempCount = 0;
+
 void setup() {
   lcd.begin(16,2);
-  //Serial.begin(9600);
+  Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   lcd.print(" BLUBB-O-METER");
   lcd.setCursor(6,1);
@@ -20,23 +31,38 @@ void setup() {
 }
 
 void loop() {
-  int sensorVal = analogRead(sensorPin);
-  //#Serial.print("Sensor value: ");
-  //#Serial.print(sensorVal);
-  //#Serial.print("\n");
+  pressure = analogRead(pressurePin);
+  tempPinVal = analogRead(tempPin);
+  tempVoltage = (tempPinVal/1024.0)*5.0;
+  temp += (tempVoltage-.5)*100;
+  tempCount ++;
+
+  
   delay(10);
-  if (sensorVal > 10){
+  if (pressure > 10){
     t1 = millis();
-    //Serial.print(" BLUBB! #");
-    //Serial.print(counter);
-    //Serial.print(", sec since last blubb: ");
-    //Serial.print((t1-t0)/1000.);
-    //Serial.print(" sec");
+    avgTemp = temp/tempCount;
+    if (avgTemp>tempMax){
+      tempMax=avgTemp;
+    }
+    if (avgTemp<tempMin){
+      tempMin=avgTemp;
+    }
+    //Serial.print("Temp avg : ");
+    //Serial.print(avgTemp);
+    //Serial.print("\n");
+
 
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("Blubb#:");
-    lcd.print(counter);
+    //lcd.print("Blubb#:");
+    //lcd.print(counter);
+    lcd.print("Tmp:");
+    lcd.print(round(avgTemp));
+    lcd.print(" M:");
+    lcd.print(round(tempMax));
+    lcd.print(" m:");
+    lcd.print(round(tempMin));
     lcd.setCursor(0,1);
     lcd.print("T:");
     lcd.print((t1-t0)/1000.);
@@ -64,6 +90,8 @@ void loop() {
 
     t0 = t1;
     counter ++;
+    tempCount=0;
+    temp=0;
     digitalWrite(LED_BUILTIN, HIGH);
     delay(1000);
     digitalWrite(LED_BUILTIN, LOW);
