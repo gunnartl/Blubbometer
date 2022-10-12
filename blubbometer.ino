@@ -7,7 +7,7 @@ long counter = 0;
 long t0 = 0;
 long t1 = 1;
 const int snittSize = 100;
-int snittArray[snittSize];
+long snittArray[snittSize];
 float snitt;
 
 int pressure;
@@ -21,7 +21,7 @@ int tempCount = 0;
 
 void setup() {
   lcd.begin(16,2);
-  Serial.begin(9600);
+  //Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);
   lcd.print(" BLUBB-O-METER");
   lcd.setCursor(6,1);
@@ -64,15 +64,17 @@ void loop() {
     lcd.print(" m:");
     lcd.print(round(tempMin));
     lcd.setCursor(0,1);
-    lcd.print("T:");
-    lcd.print((t1-t0)/1000.);
+    lcd.print("s");
+    lcd.print((t1-t0)/1000.,1);
 
-    snittArray[counter%snittSize] = t1-t0;
+    snittArray[counter%snittSize] = (t1-t0);
+
     if(counter >=snittSize){
       snitt = 0;
       for(int i=0; i < snittSize; i++){
         snitt += snittArray[i];
       }
+
       snitt = snitt/(1000. * snittSize);
       //Serial.print(", average last ");
       //Serial.print(snittSize); 
@@ -80,8 +82,8 @@ void loop() {
       //Serial.print(snitt);
       //Serial.print(" sec");
 
-      lcd.print(" avg:");
-      lcd.print(snitt);
+      lcd.print(" Gs");
+      lcd.print(snitt,1);
     }
 
     
